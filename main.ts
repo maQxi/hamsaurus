@@ -3,15 +3,15 @@ import "$std/dotenv/load.ts";
 import express from "express";
 import bodyParser from "bodyParser";
 import nacl from "npm:tweetnacl";
-import { Response, Request } from "npm:@types/express@4.17.15";
+import { Response, Request, Application } from "npm:@types/express@4.17.15";
 
 const token = Deno.env.get("BOT_TOKEN")!;
 const clientId = Deno.env.get("DISCORD_CLIENT_ID")!;
 
-const app = express();
+const app: Application = express();
 app.use(bodyParser.json());
 
-app.post("/", async (req: Request, res: Response) => {
+app.post("/", async (req, res) => {
   const { valid, body } = await verifySignature(req);
   if (!valid) {
     return res.status(401).json({ error: "Invalid request signature" });
