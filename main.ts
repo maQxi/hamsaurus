@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 
 app.post("/", async (req, res) => {
   const { valid, body } = await verifySignature(req);
+  console.log(valid, body, "body");
   if (!valid) {
     return res.status(401).json({ error: "Invalid request signature" });
   }
@@ -50,6 +51,7 @@ async function verifySignature(
   const signature = request.headers["X-Signature-Ed25519"];
   const timestamp = request.headers["X-Signature-Timestamp"];
   const body = await request.body;
+  console.log(signature, timestamp, body, "body");
   if (!signature || !timestamp) {
     return { valid: false, body: "" };
   }
