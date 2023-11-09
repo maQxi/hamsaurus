@@ -5,7 +5,9 @@
       "npm:@types/express@4.17.15": "npm:@types/express@4.17.15",
       "npm:body-parser": "npm:body-parser@1.20.2",
       "npm:discord.js": "npm:discord.js@14.13.0",
-      "npm:express": "npm:express@4.18.2"
+      "npm:express": "npm:express@4.18.2",
+      "npm:tdigest": "npm:tdigest@0.1.2",
+      "npm:tweetnacl": "npm:tweetnacl@1.0.3"
     },
     "npm": {
       "@discordjs/builders@1.6.5": {
@@ -166,6 +168,10 @@
       },
       "array-flatten@1.1.1": {
         "integrity": "sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg==",
+        "dependencies": {}
+      },
+      "bintrees@1.0.2": {
+        "integrity": "sha512-VOMgTMwjAaUG580SXn3LacVgjurrbMme7ZZNYGSSV7mmtY6QQRh0Eg3pwIcntQ77DErK1L0NxkbetjcoXzVwKw==",
         "dependencies": {}
       },
       "body-parser@1.20.1": {
@@ -559,6 +565,12 @@
         "integrity": "sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==",
         "dependencies": {}
       },
+      "tdigest@0.1.2": {
+        "integrity": "sha512-+G0LLgjjo9BZX2MfdvPfH+MKLCrxlXSYec5DaPYP1fe6Iyhf0/fSmJ0bFiZ1F8BT6cGXl2LpltQptzjXKWEkKA==",
+        "dependencies": {
+          "bintrees": "bintrees@1.0.2"
+        }
+      },
       "toidentifier@1.0.1": {
         "integrity": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==",
         "dependencies": {}
@@ -569,6 +581,10 @@
       },
       "tslib@2.6.2": {
         "integrity": "sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==",
+        "dependencies": {}
+      },
+      "tweetnacl@1.0.3": {
+        "integrity": "sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==",
         "dependencies": {}
       },
       "type-is@1.6.18": {
