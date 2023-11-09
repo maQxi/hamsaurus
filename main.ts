@@ -3,22 +3,24 @@ import "$std/dotenv/load.ts";
 import express from "express";
 import bodyParser from "bodyParser";
 import nacl from "npm:tweetnacl";
+import { verifyKey, verifyKeyMiddleware } from "npm:discord-interactions";
 import { Response, Request, Application } from "npm:@types/express@4.17.15";
 
 const token = Deno.env.get("BOT_TOKEN")!;
 const clientId = Deno.env.get("DISCORD_CLIENT_ID")!;
+const publicKey = Deno.env.get("DISCORD_PUBLIC_KEY")!;
 
 const app: Application = express();
 app.use(bodyParser.json());
 
-app.post("/", async (req, res) => {
+app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
   try {
-    const { valid, body } = await verifySignature(req);
-    console.log(valid, body, "body");
-    if (!valid) {
-      return res.status(401).json({ error: "Invalid request signature" });
-    }
-    const { type = 0, data = { options: [] } } = JSON.parse(body);
+    // const { valid, body } = await verifySignature(req);
+    // console.log(valid, body, "body");
+    // if (!valid) {
+    //   return res.status(401).json({ error: "Invalid request signature" });
+    // }
+    const { type = 0, data = { options: [] } } = JSON.parse(req.body);
 
     if (type === 1) {
       res.json({ type: 1 });
@@ -39,7 +41,7 @@ app.post("/", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(401).json({ error: "invalid request signature" });
+    res.status(401).end("invalid request signature");
   }
 });
 
@@ -48,31 +50,30 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-async function verifySignature(
-  request: Request
-): Promise<{ valid: boolean; body: string }> {
-  const PUBLIC_KEY = Deno.env.get("DISCORD_PUBLIC_KEY")!;
-  // Discord sends these headers with every request.
-  // const signature = request.headers["X-Signature-Ed25519"];
-  console.log(request.rawHeaders);
-  const timestamp = request.headers["x-signature-timestamp"];
-  const signature = request.headers["x-signature-ed25519"];
-  const body = await request.body;
-  console.log(signature, timestamp, body, "body");
+// async function verifySignature(
+//   request: Request
+// ): Promise<{ valid: boolean; body: string }> {
+//   const PUBLIC_KEY = Deno.env.get("DISCORD_PUBLIC_KEY")!;
+//   // Discord sends these headers with every request.
+//   // const signature = request.headers["X-Signature-Ed25519"];
+//   console.log(request.rawHeaders);
+//   const timestamp = request.headers["x-signature-timestamp"];
+//   const signature = request.headers["x-signature-ed25519"];
+//   const body = await request.body;
+//   console.log(signature, timestamp, body, "body");
 
-  if (!signature || !timestamp) {
-    return { valid: false, body: "" };
-  }
+//   if (!signature || !timestamp) {
+//     return { valid: false, body: "" };
+//   }
+//   const valid = nacl.sign.detached.verify(
+//     new TextEncoder().encode(timestamp + body),
+//     hexToUint8Array(signature as string),
+//     hexToUint8Array(PUBLIC_KEY)
+//   );
+//   return { valid, body };
+// }
 
-  const valid = nacl.sign.detached.verify(
-    new TextEncoder().encode(timestamp + body),
-    hexToUint8Array(signature as string),
-    hexToUint8Array(PUBLIC_KEY)
-  );
-  return { valid, body };
-}
-
-/** Converts a hexadecimal string to Uint8Array. */
-function hexToUint8Array(hex: string) {
-  return new Uint8Array(hex.match(/.{1,2}/g)!.map((val) => parseInt(val, 16)));
-}
+// /** Converts a hexadecimal string to Uint8Array. */
+// function hexToUint8Array(hex: string) {
+//   return new Uint8Array(hex.match(/.{1,2}/g)!.map((val) => parseInt(val, 16)));
+// }
