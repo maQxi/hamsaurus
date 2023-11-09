@@ -12,6 +12,7 @@ const app: Application = express();
 app.use(bodyParser.json());
 
 app.post("/", async (req, res) => {
+  console.log("hd", req.headers);
   const { valid, body } = await verifySignature(req);
   console.log(valid, body, "body");
   if (!valid) {
@@ -48,8 +49,10 @@ async function verifySignature(
 ): Promise<{ valid: boolean; body: string }> {
   const PUBLIC_KEY = Deno.env.get("DISCORD_PUBLIC_KEY")!;
   // Discord sends these headers with every request.
-  const signature = request.headers["X-Signature-Ed25519"];
-  const timestamp = request.headers["X-Signature-Timestamp"];
+  // const signature = request.headers["X-Signature-Ed25519"];
+  console.log(request.rawHeaders);
+  const timestamp = request.headers["x-signature-timestamp"];
+  const signature = request.headers["x-signature-ed25519"];
   const body = await request.body;
   console.log(signature, timestamp, body, "body");
   if (!signature || !timestamp) {
