@@ -5,6 +5,8 @@ import bodyParser from "bodyParser";
 import nacl from "npm:tweetnacl";
 import { verifyKey, verifyKeyMiddleware } from "npm:discord-interactions";
 import { Response, Request, Application } from "npm:@types/express@4.17.15";
+import { APIInteraction } from "discordTypes";
+import { getXp } from "./commands/xp.ts 
 
 const token = Deno.env.get("BOT_TOKEN")!;
 const clientId = Deno.env.get("DISCORD_CLIENT_ID")!;
@@ -16,87 +18,22 @@ const app: Application = express();
 app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
   try {
     console.log(req.body, "body");
-    const { type = 0, data = { options: [] } } = req.body;
-    if (data.name === "ping") {
-      return res.json({
-        type: 4,
-        data: {
-          content: "pong!",
-        },
-      });
-    }
+    const { type, data }: APIInteraction = req.body;
+
     console.log(data, "data");
     if (type === 1) {
-      return res.json({
-        version: 1,
-        type: 3,
-        token: "unique_interaction_token",
-        message: {
-          type: 0,
-          tts: false,
-          timestamp: "2021-05-19T02:12:51.710000+00:00",
-          pinned: false,
-          mentions: [],
-          mention_roles: [],
-          mention_everyone: false,
-          id: "844397162624450620",
-          flags: 0,
-          embeds: [],
-          edited_timestamp: null,
-          content: "This is a message with components.",
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  type: 2,
-                  label: "Click me!",
-                  style: 1,
-                  custom_id: "click_one",
-                },
-              ],
-            },
-          ],
-          channel_id: "345626669114982402",
-          author: {
-            username: "Mason",
-            public_flags: 131141,
-            id: "53908232506183680",
-            discriminator: "1337",
-            avatar: "a_d5efa99b3eeaa7dd43acca82f5692432",
-          },
-          attachments: [],
-        },
-        member: {
-          user: {
-            username: "Mason",
-            public_flags: 131141,
-            id: "53908232506183680",
-            discriminator: "1337",
-            avatar: "a_d5efa99b3eeaa7dd43acca82f5692432",
-          },
-          roles: ["290926798626357999"],
-          premium_since: null,
-          permissions: "17179869183",
-          pending: false,
-          nick: null,
-          mute: false,
-          joined_at: "2017-03-13T19:19:14.040000+00:00",
-          is_pending: false,
-          deaf: false,
-          avatar: null,
-        },
-        id: "846462639134605312",
-        guild_id: "290926798626357999",
-        data: {
-          custom_id: "click_one",
-          component_type: 2,
-        },
-        channel_id: "345626669114982999",
-        application_id: "290926444748734465",
-      });
       res.json({ type: 1 });
     } else if (type === 2) {
+      if (data.name === "ping") {
+        return res.json({
+          type: 4,
+          data: {
+            content: "pong!",
+          },
+        });
+      } if (data.name === "xp") {
+        getXp(data);
+      }
       const { value } = data.options.find((option) => option.name === "name");
       return res.json({
         // Type 4 responds with the below message retaining the user's
@@ -107,12 +44,13 @@ app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
         },
       });
     } else {
+      console.log(data, "data");
       // Handle other cases as needed
       res.status(400).json({ error: "Invalid type" });
     }
   } catch (e) {
     console.log(e);
-    res.status(401).end("invalid request signature");
+    res.status(401).send("invalid request signature");
   }
 });
 
