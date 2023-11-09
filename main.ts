@@ -55,15 +55,16 @@ async function verifySignature(
   const signature = request.headers["x-signature-ed25519"];
   const body = await request.body;
   console.log(signature, timestamp, body, "body");
+
   if (!signature || !timestamp) {
     return { valid: false, body: "" };
   }
+
   const valid = nacl.sign.detached.verify(
     new TextEncoder().encode(timestamp + body),
     hexToUint8Array(signature as string),
     hexToUint8Array(PUBLIC_KEY)
   );
-
   return { valid, body };
 }
 
