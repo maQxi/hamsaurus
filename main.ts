@@ -55,7 +55,7 @@ async function verifySignature(
   }
   const valid = nacl.sign.detached.verify(
     new TextEncoder().encode(timestamp + body),
-    hexToUint8Array(signature),
+    hexToUint8Array(signature as string),
     hexToUint8Array(PUBLIC_KEY)
   );
 
