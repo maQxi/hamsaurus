@@ -12,30 +12,34 @@ const app: Application = express();
 app.use(bodyParser.json());
 
 app.post("/", async (req, res) => {
-  console.log("hd", req.headers);
-  const { valid, body } = await verifySignature(req);
-  console.log(valid, body, "body");
-  if (!valid) {
-    return res.status(401).json({ error: "Invalid request signature" });
-  }
-  const { type = 0, data = { options: [] } } = JSON.parse(body);
+  try {
+    const { valid, body } = await verifySignature(req);
+    console.log(valid, body, "body");
+    if (!valid) {
+      return res.status(401).json({ error: "Invalid request signature" });
+    }
+    const { type = 0, data = { options: [] } } = JSON.parse(body);
 
-  if (type === 1) {
-    res.json({ type: 1 });
-  }
-  if (type === 2) {
-    const { value } = data.options.find((option) => option.name === "name");
-    return res.json({
-      // Type 4 responds with the below message retaining the user's
-      // input at the top.
-      type: 4,
-      data: {
-        content: `Hello, ${value}!`,
-      },
-    });
-  } else {
-    // Handle other cases as needed
-    res.status(400).json({ error: "Invalid type" });
+    if (type === 1) {
+      res.json({ type: 1 });
+    }
+    if (type === 2) {
+      const { value } = data.options.find((option) => option.name === "name");
+      return res.json({
+        // Type 4 responds with the below message retaining the user's
+        // input at the top.
+        type: 4,
+        data: {
+          content: `Hello, ${value}!`,
+        },
+      });
+    } else {
+      // Handle other cases as needed
+      res.status(400).json({ error: "Invalid type" });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(401).json({ error: "invalid request signature" });
   }
 });
 
