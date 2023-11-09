@@ -17,17 +17,16 @@ app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
   try {
     console.log(req.body, "body");
     const { type = 0, data = { options: [] } } = req.body;
-
+    if (data.name === "ping") {
+      return res.json({
+        type: 4,
+        data: {
+          content: "pong!",
+        },
+      });
+    }
     console.log(data, "data");
     if (type === 1) {
-      if (data.name === "ping") {
-        return res.json({
-          type: 4,
-          data: {
-            content: "pong!",
-          },
-        });
-      }
       return res.json({
         version: 1,
         type: 3,
@@ -97,8 +96,7 @@ app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
         application_id: "290926444748734465",
       });
       res.json({ type: 1 });
-    }
-    if (type === 2) {
+    } else if (type === 2) {
       const { value } = data.options.find((option) => option.name === "name");
       return res.json({
         // Type 4 responds with the below message retaining the user's
