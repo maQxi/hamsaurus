@@ -6,7 +6,7 @@ import nacl from "npm:tweetnacl";
 import { verifyKey, verifyKeyMiddleware } from "npm:discord-interactions";
 import { Response, Request, Application } from "npm:@types/express@4.17.15";
 import { APIInteraction } from "discordTypes";
-import { getXp } from "./commands/xp.ts 
+import { getXp } from "./commands/xp.ts";
 
 const token = Deno.env.get("BOT_TOKEN")!;
 const clientId = Deno.env.get("DISCORD_CLIENT_ID")!;
@@ -31,8 +31,9 @@ app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
             content: "pong!",
           },
         });
-      } if (data.name === "xp") {
-        getXp(data);
+      }
+      if (data.name === "xp") {
+        return res.json(getXp(data));
       }
       const { value } = data.options.find((option) => option.name === "name");
       return res.json({

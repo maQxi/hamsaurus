@@ -1,10 +1,10 @@
-// Importing a specific API version
 import {
   APIChatInputApplicationCommandDMInteraction,
   APIChatInputApplicationCommandInteraction,
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
 } from "discordTypes";
+
 export const getXp = (data: APIChatInputApplicationCommandInteractionData) => {
   // return 5 xp and name of user
   const { value } = data.options.find((option) => option.name === "name");
