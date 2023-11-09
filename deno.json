@@ -4,6 +4,8 @@
   },
   "imports": {
     "discord": "npm:discord.js",
+    "express": "npm:express",
+    "bodyParser": "npm:body-parser",
     "$std/": "https://deno.land/std@0.193.0/"
   }
 }

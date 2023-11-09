@@ -1,63 +1,65 @@
-import {
-  Client,
-  Collection,
-  Events,
-  GatewayIntentBits,
-  REST,
-  Routes,
-} from "discord";
-// import { Client } from "npm:discord.js";
-
+// @deno-types="npm:@types/express@4.17.15"
 import "$std/dotenv/load.ts";
-
-// const commands = [
-//   {
-//     name: "ping",
-//     description: "Replies with Pong!",
-//   },
-// ];
+import express from "express";
+import bodyParser from "bodyParser";
+import nacl from "https://cdn.skypack.dev/tweetnacl@v1.0.3?dts";
+import { Response } from "npm:@types/express@4.17.15";
 
 const token = Deno.env.get("BOT_TOKEN")!;
 const clientId = Deno.env.get("DISCORD_CLIENT_ID")!;
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user?.tag}!`);
-});
+const app = express();
+app.use(bodyParser.json());
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+app.post("/", async (req: Request, res: Response) => {
+  const { valid, body } = await verifySignature(req);
+  if (!valid) {
+    return res.status(401).json({ error: "Invalid request signature" });
+  }
+  const { type = 0, data = { options: [] } } = JSON.parse(body);
 
-  if (interaction.commandName === "xp") {
-    await interaction.reply("Pong!");
+  if (type === 1) {
+    res.json({ type: 1 });
+  }
+  if (type === 2) {
+    const { value } = data.options.find((option) => option.name === "name");
+    return res.json({
+      // Type 4 responds with the below message retaining the user's
+      // input at the top.
+      type: 4,
+      data: {
+        content: `Hello, ${value}!`,
+      },
+    });
+  } else {
+    // Handle other cases as needed
+    res.status(400).json({ error: "Invalid type" });
   }
 });
-client.addListener(Events.InteractionCreate, async (interaction) => {
-  console.log(interaction, "intera");
+
+const PORT = Deno.env.get("port") || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
-client.login(token);
-const url =
-  "https://discord.com/api/v10/applications/" + clientId + "/commands";
+async function verifySignature(
+  request: Request
+): Promise<{ valid: boolean; body: string }> {
+  const PUBLIC_KEY = Deno.env.get("DISCORD_PUBLIC_KEY")!;
+  // Discord sends these headers with every request.
+  const signature = request.headers.get("X-Signature-Ed25519")!;
+  const timestamp = request.headers.get("X-Signature-Timestamp")!;
+  const body = await request.text();
+  const valid = nacl.sign.detached.verify(
+    new TextEncoder().encode(timestamp + body),
+    hexToUint8Array(signature),
+    hexToUint8Array(PUBLIC_KEY)
+  );
 
-const json = {
-  name: "xp",
-  type: 1,
-  description: "Check your xp and rank",
-};
+  return { valid, body };
+}
 
-fetch(url, {
-  method: "POST",
-  headers: {
-    Authorization: `Bot ${token}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(json),
-})
-  .then((response) => response.json())
-  .then((data) => {
-    console.log(data);
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
+/** Converts a hexadecimal string to Uint8Array. */
+function hexToUint8Array(hex: string) {
+  return new Uint8Array(hex.match(/.{1,2}/g)!.map((val) => parseInt(val, 16)));
+}
