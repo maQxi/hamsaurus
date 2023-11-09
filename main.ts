@@ -11,7 +11,7 @@ const clientId = Deno.env.get("DISCORD_CLIENT_ID")!;
 const publicKey = Deno.env.get("DISCORD_PUBLIC_KEY")!;
 
 const app: Application = express();
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
   try {
