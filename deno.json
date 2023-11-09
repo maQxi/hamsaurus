@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-all main.ts"
+  },
+  "imports": {
+    "discord": "npm:discord.js",
+    "$std/": "https://deno.land/std@0.193.0/"
+  }
+}
