@@ -15,6 +15,7 @@ const app: Application = express();
 
 app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
   try {
+    console.log(req.body, "body");
     const { type = 0, data = { options: [] } } = JSON.parse(req.body);
 
     console.log(data, "data");
