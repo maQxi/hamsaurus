@@ -1,6 +1,7 @@
 {
   "tasks": {
-    "dev": "deno run --watch --allow-all main.ts"
+    "dev": "deno run --watch --allow-all main.ts",
+    "reg": "deno run --allow-all scripts.ts"
   },
   "imports": {
     "discord": "npm:discord.js",

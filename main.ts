@@ -15,13 +15,9 @@ const app: Application = express();
 
 app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
   try {
-    // const { valid, body } = await verifySignature(req);
-    // console.log(valid, body, "body");
-    // if (!valid) {
-    //   return res.status(401).json({ error: "Invalid request signature" });
-    // }
     const { type = 0, data = { options: [] } } = JSON.parse(req.body);
 
+    console.log(data, "data");
     if (type === 1) {
       res.json({ type: 1 });
     }
