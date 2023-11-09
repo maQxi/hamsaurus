@@ -3,7 +3,7 @@ import "$std/dotenv/load.ts";
 import express from "express";
 import bodyParser from "bodyParser";
 import nacl from "https://cdn.skypack.dev/tweetnacl@v1.0.3?dts";
-import { Response } from "npm:@types/express@4.17.15";
+import { Response, Request } from "npm:@types/express@4.17.15";
 
 const token = Deno.env.get("BOT_TOKEN")!;
 const clientId = Deno.env.get("DISCORD_CLIENT_ID")!;
@@ -47,9 +47,9 @@ async function verifySignature(
 ): Promise<{ valid: boolean; body: string }> {
   const PUBLIC_KEY = Deno.env.get("DISCORD_PUBLIC_KEY")!;
   // Discord sends these headers with every request.
-  const signature = request.headers.get("X-Signature-Ed25519")!;
-  const timestamp = request.headers.get("X-Signature-Timestamp")!;
-  const body = await request.text();
+  const signature = request.headers["X-Signature-Ed25519"] as string;
+  const timestamp = request.headers["X-Signature-Timestamp"];
+  const body = await request.body;
   const valid = nacl.sign.detached.verify(
     new TextEncoder().encode(timestamp + body),
     hexToUint8Array(signature),
