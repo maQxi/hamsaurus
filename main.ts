@@ -1,7 +1,6 @@
 // @deno-types="npm:@types/express@4.17.15"
 import "$std/dotenv/load.ts";
 import express from "express";
-import bodyParser from "bodyParser";
 import nacl from "npm:tweetnacl";
 import { verifyKey, verifyKeyMiddleware } from "npm:discord-interactions";
 import { Response, Request, Application } from "npm:@types/express@4.17.15";
@@ -18,9 +17,12 @@ const app: Application = express();
 app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
   try {
     console.log(req.body, "body");
-    const { type, data }: APIInteraction = req.body;
+    const { type, data, member, ...rest }: APIInteraction = req.body;
 
-    console.log(data, "data");
+    console.log(type, data, "data");
+    console.log(member, "member");
+    console.log(rest, "rest");
+
     if (type === 1) {
       res.json({ type: 1 });
     } else if (type === 2) {
@@ -33,12 +35,9 @@ app.post("/", verifyKeyMiddleware(publicKey), async (req, res) => {
         });
       }
       if (data.name === "xp") {
-        return res.json(getXp(data));
+        return res.json(getXp(member));
       }
-      const { value } = data.options.find((option) => option.name === "name");
       return res.json({
-        // Type 4 responds with the below message retaining the user's
-        // input at the top.
         type: 4,
         data: {
           content: `Hello, ${value}!`,
